@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 # Create your views here.
 from .forms import PostForm
 from .models import Post
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 
 def post_create(request):
@@ -41,13 +42,25 @@ def post_list(request): # list items
     #     context = {
     #         "title": "List"
     #     }
-    queryset = Post.objects.all()
+    queryset_list = Post.objects.all()
+    paginator = Paginator(queryset_list, 5)  # Show 25 contacts per page
+    page_request_var = "abc"
+    page = request.GET.get(page_request_var)
+
+    try:
+        queryset = paginator.page(page)
+    except PageNotAnInteger:
+        queryset = paginator.page(1)
+    except EmptyPage:
+        queryset = paginator.page(paginator.num_pages)
+
     context = {
         "object_list" : queryset,
-        "title": "List"
+        "title": "List",
+        "page_request_var": page_request_var,
     }
-
     return render(request, "post_list.html", context)
+
 
 def post_update(request, id=None):
     instance = get_object_or_404(Post, id=id)
