@@ -14,8 +14,6 @@ def post_create(request):
 
         messages.success(request, "Successfully Created")
         return HttpResponseRedirect(instance.get_absolute_url())
-    else:
-        messages.error(request, "Not Successfully Created")
     # if request.method =="POST":
     #     print(request.POST.get("content"))
     #     print(request.POST.get("title"))
@@ -49,7 +47,7 @@ def post_list(request): # list items
         "title": "List"
     }
 
-    return render(request, "index.html", context)
+    return render(request, "post_list.html", context)
 
 def post_update(request, id=None):
     instance = get_object_or_404(Post, id=id)
@@ -71,7 +69,5 @@ def post_update(request, id=None):
 
 def post_delete(request, id=None):
     instance = get_object_or_404(Post, id=id)
-    instance.delete()
     messages.success(request, "Successfully Updated", extra_tags="some-tag")
     return redirect("posts:list")
-    return HttpResponseRedirect(instance.get_absolute_url())
