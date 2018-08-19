@@ -1,3 +1,5 @@
+from urllib.parse import quote_plus
+
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,7 +10,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 
 def post_create(request):
-    form = PostForm(request.POST or None)
+    form = PostForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         instance = form.save(commit=False)
         instance.save()
@@ -24,12 +26,14 @@ def post_create(request):
     }
     return render(request, "post_form.html", context)
 
-def post_detail(request, id=None):
+def post_detail(request, slug=None):
     #instance = Post.objects.get(id=2)
-    instance = get_object_or_404(Post, id=id) #title="Post 3"
+    instance = get_object_or_404(Post, slug=slug) #title="Post 3"
+    share_string = quote_plus(instance.content)
     context = {
         "title": instance.title,
         "instance": instance,
+        "share_string": share_string,
     }
     return render(request, "post_detail.html", context)
 
@@ -62,9 +66,9 @@ def post_list(request): # list items
     return render(request, "post_list.html", context)
 
 
-def post_update(request, id=None):
-    instance = get_object_or_404(Post, id=id)
-    form = PostForm(request.POST or None, instance = instance)  #instance = instance ; it adds original data to edit form
+def post_update(request, slug=None):
+    instance = get_object_or_404(Post, slug=slug)
+    form = PostForm(request.POST or None, request.FILES or None, instance = instance)  #instance = instance ; it adds original data to edit form
     if form.is_valid():
         instance = form.save(commit=False)
         instance.save()
@@ -80,7 +84,7 @@ def post_update(request, id=None):
     return render(request, "post_form.html", context)
 
 
-def post_delete(request, id=None):
-    instance = get_object_or_404(Post, id=id)
+def post_delete(request, slug=None):
+    instance = get_object_or_404(Post, slug=slug)
     messages.success(request, "Successfully Updated", extra_tags="some-tag")
     return redirect("posts:list")
