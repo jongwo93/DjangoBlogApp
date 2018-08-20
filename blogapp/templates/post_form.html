@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
+{% block head_extra %}
+    {{ form.media }}
+{% endblock head_extra %}
 
 {% block content %}
 
-{{ block.super }}
 <div class="col-sm-6 col-sm-offset-3">
     <h1>FORM</h1>
 

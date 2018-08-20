@@ -18,20 +18,33 @@
         <img src="{{ instance.image.url }}" class="img-responsive"/>
     {% endif %}
 
-    <h1>{{ title }} <small>{{ instance.timestamp }}</small></h1>
-    {{ instance.content|urlify }}<br/>
-    {{ share_string }}<br/>
+    <h1>{{ title }} <small>{% if instance.draft %} <span style="color:red;">Draft</span> {% endif %}{{ instance.publish }}</small></h1>
+    {% if instance.user.get_full_name %}
+    <p>Author: {{ instance.user.get_full_name }}</p>
+    {% endif %}
+    <!-- {{ instance.content|urlify }}<br/>
+    {{ share_string }}<br/> -->
 
-    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">
-        Share on Facebook
-    </a>
-    <a href="https://twitter.com/home?status={{ instance.content|urlify }}%20{{ request.build_absolute_uri }}">
-    Share on Twitter
-    </a>
+    <!--<a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">-->
+        <!--Share on Facebook-->
+    <!--</a>-->
+    <!--<a href="https://twitter.com/h  ome?status={{ instance.content|urlify }}%20{{ request.build_absolute_uri }}">-->
+    <!--Share on Twitter-->
+    <!--</a>-->
 
-    <a href='https://plus.google.com/share?url={{ request.build_absolute_uri }}'>Share on Google+</a>
+    <!--<a href='https://plus.google.com/share?url={{ request.build_absolute_uri }}'>Share on Google+</a>-->
+    <div class="row">
+        <div class="col-sm-12">
+            <hr/>
+            <br/>
+            <div class="content-markdown">{{ instance.content }}<br/></div>
+            <hr/>
+            <br/>
 
+            <div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="box_count" data-action="like" data-size="small" data-show-faces="true" data-share="false"></div>
 
-    {{ instance.content|linebreaks }}<br/>
+            <div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div>
+        </div>
+    </div>
 </div>
 {% endblock content %}
