@@ -15,7 +15,7 @@
 {% block content %}
 <div class="col-sm-6 col-sm-offset-3">
     {% if instance.image %}
-        <img src="{{ instance.image.url }}" class="img-responsive"/>
+        <img src="{{ instance.image.url }}" class="img-fluid"/>
     {% endif %}
 
     <h1>{{ title }} <small>{% if instance.draft %} <span style="color:red;">Draft</span> {% endif %}{{ instance.publish }}</small></h1>
@@ -37,7 +37,7 @@
         <div class="col-sm-12">
             <hr/>
             <br/>
-            <div class="content-markdown">{{ instance.content }}<br/></div>
+            <div class="post-detail-img">{{ instance.get_html }}<br/></div>
             <hr/>
             <br/>
 

@@ -1,9 +1,11 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save
-from django.utils.text import slugify
-from django.conf import settings
 from django.utils import timezone
+from django.utils.text import slugify
+from django.utils.safestring import mark_safe
+from django.conf import settings
+from markdown_deux import markdown
 # Create your models here.
 
 # Model View Controller
@@ -45,6 +47,10 @@ class Post(models.Model):
     class Meta:
         ordering = ["-timestamp", "-updated"]
 
+    def get_html(self):
+        content = self.content
+        markdown_text = markdown(content)
+        return mark_safe(markdown_text)
 
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)

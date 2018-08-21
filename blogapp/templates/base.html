@@ -55,12 +55,49 @@
     $(document).ready(function() {
         $(".content-markdown").each(function() {
             var content = $(this).text()
-            console.log(content)
             var markedContent = marked(content)
-            console.log(markedContent)
             $(this).html(markedContent)
         })
+
+        $(".post-detail-img img").each(function() {
+            $(this).addClass("img-fluid")
+        })
+
+        var titleInput = $("#id_title")  //when django runs the form, it adds "id_" in front of the field name. ex id_title, id_content, id_image etc
+        //$("#preview-title").text(titleInput.val())
+
+        var contentInput = $("#id_content")
+        //$("#preview-content").html(marked(contentInput.val()))
+
+
+        //
+        function setContent(value) {
+            var markedContent = marked(value)
+            $("#preview-content").html(markedContent)
+            $("#preview-content img").each(function() {
+                $(this).addClass("img-fluid")
+            })
+        }
+        setContent(contentInput.val())
+        contentInput.keyup(function() {
+            //console.log($(this).val())
+            var newContent = $(this).val()
+            setContent(newContent)
+        })
+
+        function setTitle(value) {
+            $("#preview-title").text(value)
+        }
+        setTitle(titleInput.val())
+
+        titleInput.keyup(function() {
+            console.log($(this).val());
+            var newTitle = $(this).val()
+            setTitle(newTitle)
+        })
     })
+
+
 
 </script>
 </body>
