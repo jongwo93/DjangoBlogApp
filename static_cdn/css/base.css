@@ -1,3 +1,9 @@
 h1 {
     color: #777777;
 }
+
+.wmd-panel{
+    /*!important will override the settings*/
+    margin-right: 0px;
+    margin-left: 0px;
+}

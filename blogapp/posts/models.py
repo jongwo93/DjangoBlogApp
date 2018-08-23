@@ -6,6 +6,9 @@ from django.utils.text import slugify
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from markdown_deux import markdown
+from comments.models import Comment
+from django.contrib.contenttypes.models import ContentType
+
 # Create your models here.
 
 # Model View Controller
@@ -51,6 +54,17 @@ class Post(models.Model):
         content = self.content
         markdown_text = markdown(content)
         return mark_safe(markdown_text)
+
+    @property  # instance.comments // instance.comments()
+    def comments(self):
+        qs = Comment.objects.filter_by_instance(self)
+        return qs
+
+    @property
+    def get_content_type(self):
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        return content_type
+
 
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)

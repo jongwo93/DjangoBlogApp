@@ -1,14 +1,18 @@
 from urllib.parse import quote_plus
 
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-# Create your views here.
-from .forms import PostForm
-from .models import Post
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.utils import timezone
 from django.db.models import Q
+from comments.forms import CommentForm
+from comments.models import Comment
+
+from .forms import PostForm
+from .models import Post
+
 
 def post_create(request):
     if not request.user.is_staff or not request.user.is_superuser:
@@ -40,10 +44,48 @@ def post_detail(request, slug=None):
         if not request.user.is_staff or not request.user.is_superuser:
             raise Http404
     share_string = quote_plus(instance.content)
+    # dont need these since i added CommentManager in models.py
+    # content_type = ContentType.objects.get_for_model(Post)
+    # obj_id = instance.id
+    initial_data = {
+        "content_type": instance.get_content_type,
+        "object_id": instance.id
+    }
+
+    comment_form = CommentForm(request.POST or None, initial=initial_data)
+    if comment_form.is_valid():
+        c_type = comment_form.cleaned_data.get("content_type")
+        content_type = ContentType.objects.get(model=c_type)
+        obj_id = comment_form.cleaned_data.get("object_id")
+        content_data = comment_form.cleaned_data.get("content")
+        parent_obj = None
+        try:
+            parent_id = int(request.POST.get("parent_id"))
+        except:
+            parent_id = None
+        if parent_id:
+            parent_qs = Comment.objects.filter(id=parent_id)
+            if parent_qs.exists():
+                parent_obj = parent_qs.first()
+        new_comment, created = Comment.objects.get_or_create(
+                                    user = request.user,
+                                    content_type = content_type,
+                                    object_id = obj_id,
+                                    content = content_data,
+                                    parent = parent_obj,
+                                )
+        return HttpResponseRedirect(new_comment.content_object.get_absolute_url()) # this will update the form after commenting.
+
+
+    comments = instance.comments # Comment.objects.filter_by_instance(instance)
+
+
     context = {
         "title": instance.title,
         "instance": instance,
         "share_string": share_string,
+        "comments": comments,
+        "comment_form": comment_form,
     }
     return render(request, "post_detail.html", context)
 
