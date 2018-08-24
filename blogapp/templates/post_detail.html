@@ -5,6 +5,10 @@
     {{ instance.title }} | {{ block.super }}
 {% endblock head_title%}
 
+
+{% block post_detail_link %}
+    <li><a href="{{ instance.get_absolute_url }}">{{ instance.title }}</a></li>
+{% endblock %}
 <style>
     {% block style %}
     h1 {
@@ -49,11 +53,16 @@
             <div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="box_count" data-action="like" data-size="small" data-show-faces="true" data-share="false"></div>
             <div>
                 <p class="lead">Comments</p>
+                {% if request.user.is_authenticated %}
                 <form method="POST" action="."> {% csrf_token %}
                     {{ comment_form|crispy }}
                     <input type="submit" value="Post Comment" class="btn btn-default">
                 </form>
+                {% else %}
                 <hr/>
+                <p>You must login to comment</p>
+                {% endif %}
+
 
                 {% for comment in comments %}
                     <blockquote>
@@ -66,14 +75,19 @@
                                     <footer>via {{ child_comment.user }} | {{ child_comment.timestamp|timesince }} ago</footer>
                                 </blockquote>
                             {% endfor %}
-                        </div>
+
+                        {% if request.user.is_authenticated %}
 
                         <form method="POST" action="."> {% csrf_token %}
                             {{ comment_form|crispy }}
                             <input type="hidden" name="parent_id" value="{{ comment.id }}">
                             <input type="submit" value="Reply" class="btn btn-default">
                         </form>
-
+                        {% else %}
+                        <hr/>
+                        <p>You must login to comment</p>
+                        {% endif %}
+                        </div>
                     </blockquote>
                     <hr/>
                 {% endfor %}
