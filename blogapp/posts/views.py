@@ -12,6 +12,7 @@ from comments.models import Comment
 
 from .forms import PostForm
 from .models import Post
+from .utils import get_read_time
 
 
 def post_create(request):
@@ -44,6 +45,9 @@ def post_detail(request, slug=None):
         if not request.user.is_staff or not request.user.is_superuser:
             raise Http404
     share_string = quote_plus(instance.content)
+
+
+    print(get_read_time(instance.get_html()))
     # dont need these since i added CommentManager in models.py
     # content_type = ContentType.objects.get_for_model(Post)
     # obj_id = instance.id
