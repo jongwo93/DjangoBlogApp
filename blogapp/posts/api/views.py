@@ -57,14 +57,17 @@ class PostUpdateAPIView(RetrieveUpdateAPIView):
     serializer_class = PostCreateUpdateSerializer
     lookup_field = 'slug'
     # lookup_url_kwarg = 'abc'
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
 class PostDeleteAPIView(DestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
     lookup_field = 'slug'
     # lookup_url_kwarg = 'abc'
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
 

@@ -50,6 +50,10 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse("posts:detail", kwargs={"slug": self.slug})  #{% url 'posts:detail' id=obj.id %}
 
+    def get_api_url(self):
+        return reverse("posts-api:detail", kwargs={"slug": self.slug})  # {% url 'posts:detail' id=obj.id %}
+
+
     class Meta:
         ordering = ["-timestamp", "-updated"]
 
